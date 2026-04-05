@@ -49,6 +49,7 @@ import androidx.compose.ui.unit.dp
 import com.market.android.presentation.theme.toColor
 import com.market.android.presentation.theme.toContainerColor
 import com.market.shared.domain.model.Category
+import com.market.shared.domain.model.GroceryItem
 
 private val UNITS = listOf("un", "kg", "g", "L", "ml", "cx", "pct", "dz", "rl", "par")
 
@@ -56,14 +57,16 @@ private val UNITS = listOf("un", "kg", "g", "L", "ml", "cx", "pct", "dz", "rl", 
 @Composable
 fun AddItemBottomSheet(
     onDismiss: () -> Unit,
-    onSave: (name: String, quantity: Double, unit: String, category: Category, note: String) -> Unit
+    onSave: (name: String, quantity: Double, unit: String, category: Category, note: String) -> Unit,
+    initialItem: GroceryItem? = null
 ) {
-    var name by remember { mutableStateOf("") }
-    var quantity by remember { mutableDoubleStateOf(1.0) }
-    var unit by remember { mutableStateOf("un") }
-    var selectedCategory by remember { mutableStateOf(Category.OTHER) }
-    var note by remember { mutableStateOf("") }
+    var name by remember { mutableStateOf(initialItem?.name ?: "") }
+    var quantity by remember { mutableDoubleStateOf(initialItem?.quantity ?: 1.0) }
+    var unit by remember { mutableStateOf(initialItem?.unit ?: "un") }
+    var selectedCategory by remember { mutableStateOf(initialItem?.category ?: Category.OTHER) }
+    var note by remember { mutableStateOf(initialItem?.note ?: "") }
     var nameError by remember { mutableStateOf(false) }
+    val isEditing = initialItem != null
 
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
@@ -81,7 +84,7 @@ fun AddItemBottomSheet(
                 .imePadding()
         ) {
             Text(
-                text = "Adicionar Item",
+                text = if (isEditing) "Editar Item" else "Adicionar Item",
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.colorScheme.onSurface
@@ -231,7 +234,7 @@ fun AddItemBottomSheet(
                 Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(20.dp))
                 Spacer(Modifier.width(8.dp))
                 Text(
-                    text = "Salvar Item",
+                    text = if (isEditing) "Salvar Alterações" else "Salvar Item",
                     style = MaterialTheme.typography.labelLarge,
                     fontWeight = FontWeight.SemiBold
                 )

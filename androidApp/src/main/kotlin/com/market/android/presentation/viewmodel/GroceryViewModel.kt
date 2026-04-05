@@ -100,6 +100,25 @@ class GroceryViewModel(private val useCases: GroceryUseCases) : ViewModel() {
         )
     }
 
+    fun updateItem(
+        original: GroceryItem,
+        name: String,
+        quantity: Double,
+        unit: String,
+        category: Category,
+        note: String
+    ) = viewModelScope.launch {
+        useCases.upsertItem(
+            original.copy(
+                name = name.trim(),
+                quantity = quantity,
+                unit = unit,
+                category = category,
+                note = note.trim()
+            )
+        )
+    }
+
     fun toggleItem(item: GroceryItem) = viewModelScope.launch {
         useCases.upsertItem(item.copy(isChecked = !item.isChecked))
     }

@@ -61,6 +61,7 @@ import com.market.android.presentation.theme.toColor
 import com.market.android.presentation.viewmodel.FilterOption
 import com.market.android.presentation.viewmodel.GroceryViewModel
 import com.market.shared.domain.model.Category
+import com.market.shared.domain.model.GroceryItem
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
@@ -70,6 +71,7 @@ fun GroceryListScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var showAddSheet by remember { mutableStateOf(false) }
+    var itemToEdit by remember { mutableStateOf<GroceryItem?>(null) }
     var searchActive by remember { mutableStateOf(false) }
 
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
@@ -198,6 +200,7 @@ fun GroceryListScreen(
                             item = item,
                             onToggle = { viewModel.toggleItem(item) },
                             onDelete = { viewModel.deleteItem(item.id) },
+                            onEdit = { itemToEdit = item },
                             modifier = Modifier
                                 .padding(horizontal = 16.dp, vertical = 4.dp)
                                 .animateItem()
@@ -214,6 +217,16 @@ fun GroceryListScreen(
             onSave = { name, qty, unit, cat, note ->
                 viewModel.addItem(name, qty, unit, cat, note)
             }
+        )
+    }
+
+    itemToEdit?.let { item ->
+        AddItemBottomSheet(
+            onDismiss = { itemToEdit = null },
+            onSave = { name, qty, unit, cat, note ->
+                viewModel.updateItem(item, name, qty, unit, cat, note)
+            },
+            initialItem = item
         )
     }
 }

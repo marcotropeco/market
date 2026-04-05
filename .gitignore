@@ -1,0 +1,24 @@
+# Build outputs
+.build/
+build/
+*/build/
+
+# IDE
+.idea/
+
+# Gradle
+.gradle/
+local.properties
+
+# Android
+*.apk
+*.aab
+*.ap_
+*.dex
+
+# Kotlin
+*.class
+
+# OS
+.DS_Store
+Thumbs.db
