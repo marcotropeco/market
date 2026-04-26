@@ -26,6 +26,9 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.DeleteSweep
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DockedSearchBar
@@ -73,6 +76,7 @@ fun GroceryListScreen(
     var showAddSheet by remember { mutableStateOf(false) }
     var itemToEdit by remember { mutableStateOf<GroceryItem?>(null) }
     var searchActive by remember { mutableStateOf(false) }
+    var showClearConfirmDialog by remember { mutableStateOf(false) }
 
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
 
@@ -97,7 +101,7 @@ fun GroceryListScreen(
                             Icon(Icons.Default.Search, contentDescription = "Buscar")
                         }
                         if (uiState.checkedCount > 0) {
-                            IconButton(onClick = { viewModel.clearChecked() }) {
+                            IconButton(onClick = { showClearConfirmDialog = true }) {
                                 Icon(
                                     Icons.Default.DeleteSweep,
                                     contentDescription = "Limpar marcados",
@@ -227,6 +231,32 @@ fun GroceryListScreen(
                 viewModel.updateItem(item, name, qty, unit, cat, note)
             },
             initialItem = item
+        )
+    }
+
+    if (showClearConfirmDialog) {
+        AlertDialog(
+            onDismissRequest = { showClearConfirmDialog = false },
+            title = { Text("Remover marcados") },
+            text = { Text("Deseja remover todos os ${uiState.checkedCount} itens marcados da lista?") },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        viewModel.clearChecked()
+                        showClearConfirmDialog = false
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.error
+                    )
+                ) {
+                    Text("Remover")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showClearConfirmDialog = false }) {
+                    Text("Cancelar")
+                }
+            }
         )
     }
 }
