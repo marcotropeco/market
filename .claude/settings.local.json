@@ -4,7 +4,19 @@
       "Bash(./gradlew :androidApp:compileDebugKotlin)",
       "Read(//private/tmp/pdfgen/**)",
       "Bash(npm install:*)",
-      "Bash(osascript:*)"
+      "Bash(osascript:*)",
+      "Bash(cupsfilter /tmp/pdfgen/course.html -o media=A4)",
+      "Bash(echo \"exit: $?\")",
+      "Read(//tmp/**)",
+      "Bash(brew --version)",
+      "Bash(brew install:*)",
+      "Bash(textutil -convert pdf /tmp/pdfgen/course.html -output /tmp/pdfgen/relatorio-market-kmp-curso.pdf)",
+      "Bash(brew list:*)",
+      "Bash(pandoc --version)",
+      "Bash(node -e ':*)",
+      "Bash(node generate.js)",
+      "Bash(ls -lh /Users/marcocosta/projects/market/relatorio-market-kmp-curso.*)",
+      "Bash(open:*)"
     ]
   }
 }

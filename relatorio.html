@@ -1,0 +1,1438 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+    font-size: 10.5pt;
+    line-height: 1.7;
+    color: #1a1a2e;
+    background: white;
+  }
+
+  /* ── COVER ─────────────────────────────────────────── */
+  .cover {
+    width: 100%;
+    height: 100vh;
+    background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    page-break-after: always;
+    text-align: center;
+    padding: 60px;
+  }
+  .cover-badge {
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.25);
+    color: #a78bfa;
+    font-size: 9pt;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    padding: 6px 18px;
+    border-radius: 20px;
+    margin-bottom: 32px;
+  }
+  .cover h1 {
+    font-size: 38pt;
+    font-weight: 700;
+    color: white;
+    line-height: 1.15;
+    margin-bottom: 16px;
+  }
+  .cover h1 span { color: #a78bfa; }
+  .cover .subtitle {
+    font-size: 14pt;
+    color: #c4b5fd;
+    margin-bottom: 48px;
+    font-weight: 300;
+  }
+  .cover-divider {
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(90deg, #7c3aed, #a78bfa);
+    border-radius: 2px;
+    margin: 0 auto 48px;
+  }
+  .cover-meta {
+    display: flex;
+    gap: 32px;
+    justify-content: center;
+  }
+  .cover-meta-item {
+    text-align: center;
+  }
+  .cover-meta-item .label {
+    font-size: 8pt;
+    color: #7c6fa8;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    display: block;
+    margin-bottom: 4px;
+  }
+  .cover-meta-item .value {
+    font-size: 11pt;
+    color: #e9d5ff;
+    font-weight: 500;
+  }
+
+  /* ── TOC ────────────────────────────────────────────── */
+  .toc-page {
+    padding: 60px 70px;
+    page-break-after: always;
+    min-height: 100vh;
+  }
+  .toc-title {
+    font-size: 22pt;
+    font-weight: 700;
+    color: #1a1a2e;
+    margin-bottom: 8px;
+  }
+  .toc-subtitle {
+    font-size: 10pt;
+    color: #6b7280;
+    margin-bottom: 40px;
+  }
+  .toc-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px dashed #e5e7eb;
+  }
+  .toc-num {
+    font-size: 9pt;
+    font-weight: 700;
+    color: #7c3aed;
+    width: 28px;
+    flex-shrink: 0;
+  }
+  .toc-name {
+    font-size: 10.5pt;
+    color: #374151;
+    flex: 1;
+  }
+  .toc-sub {
+    padding-left: 28px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    border-bottom: none;
+  }
+  .toc-sub .toc-name {
+    font-size: 9.5pt;
+    color: #6b7280;
+  }
+  .toc-dots {
+    flex: 1;
+    border-bottom: 1px dotted #d1d5db;
+    margin: 0 8px;
+    height: 0;
+    align-self: flex-end;
+    margin-bottom: 5px;
+  }
+
+  /* ── PAGE ───────────────────────────────────────────── */
+  .page {
+    padding: 55px 70px;
+    page-break-after: always;
+    min-height: 100vh;
+    position: relative;
+  }
+  .page:last-child { page-break-after: auto; }
+
+  /* ── CHAPTER HEADER ─────────────────────────────────── */
+  .chapter-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    margin-bottom: 32px;
+    padding-bottom: 24px;
+    border-bottom: 2px solid #ede9fe;
+  }
+  .chapter-num {
+    font-size: 42pt;
+    font-weight: 700;
+    color: #ede9fe;
+    line-height: 1;
+    flex-shrink: 0;
+    font-family: 'Inter', sans-serif;
+  }
+  .chapter-title-block {}
+  .chapter-tag {
+    font-size: 8pt;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #7c3aed;
+    display: block;
+    margin-bottom: 4px;
+  }
+  .chapter-title {
+    font-size: 22pt;
+    font-weight: 700;
+    color: #1a1a2e;
+    line-height: 1.2;
+  }
+
+  /* ── TYPOGRAPHY ─────────────────────────────────────── */
+  h2 {
+    font-size: 15pt;
+    font-weight: 700;
+    color: #1e1b4b;
+    margin-top: 32px;
+    margin-bottom: 12px;
+    padding-left: 12px;
+    border-left: 3px solid #7c3aed;
+  }
+  h3 {
+    font-size: 11.5pt;
+    font-weight: 600;
+    color: #374151;
+    margin-top: 22px;
+    margin-bottom: 8px;
+  }
+  p {
+    margin-bottom: 12px;
+    color: #374151;
+  }
+  p.lead {
+    font-size: 11.5pt;
+    color: #4b5563;
+    line-height: 1.8;
+    margin-bottom: 20px;
+  }
+  strong { color: #1e1b4b; }
+
+  /* ── CALLOUT BOXES ──────────────────────────────────── */
+  .callout {
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin: 20px 0;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+  }
+  .callout-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+  .callout-content {}
+  .callout-title { font-size: 10pt; font-weight: 700; margin-bottom: 4px; }
+  .callout-text { font-size: 9.5pt; line-height: 1.6; }
+
+  .callout.theory { background: #f0f9ff; border-left: 3px solid #0ea5e9; }
+  .callout.theory .callout-title { color: #0369a1; }
+  .callout.theory .callout-text { color: #0c4a6e; }
+
+  .callout.practice { background: #f0fdf4; border-left: 3px solid #22c55e; }
+  .callout.practice .callout-title { color: #15803d; }
+  .callout.practice .callout-text { color: #14532d; }
+
+  .callout.tip { background: #fefce8; border-left: 3px solid #eab308; }
+  .callout.tip .callout-title { color: #a16207; }
+  .callout.tip .callout-text { color: #713f12; }
+
+  .callout.important { background: #fdf4ff; border-left: 3px solid #a855f7; }
+  .callout.important .callout-title { color: #7e22ce; }
+  .callout.important .callout-text { color: #581c87; }
+
+  /* ── CODE ───────────────────────────────────────────── */
+  pre {
+    background: #1e1b4b;
+    color: #e2e8f0;
+    font-family: 'Fira Code', 'Courier New', monospace;
+    font-size: 8.5pt;
+    line-height: 1.7;
+    padding: 20px 22px;
+    border-radius: 10px;
+    margin: 16px 0;
+    overflow: hidden;
+    white-space: pre-wrap;
+  }
+  pre .comment { color: #6b7280; }
+  pre .keyword { color: #a78bfa; }
+  pre .string { color: #86efac; }
+  pre .type { color: #67e8f9; }
+  pre .fn { color: #fbbf24; }
+  pre .num { color: #fb923c; }
+  code {
+    font-family: 'Fira Code', 'Courier New', monospace;
+    font-size: 8.5pt;
+    background: #f1f0ff;
+    color: #5b21b6;
+    padding: 1px 5px;
+    border-radius: 4px;
+  }
+
+  /* ── DIAGRAM / FLOW ─────────────────────────────────── */
+  .diagram {
+    background: #fafafa;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 20px;
+    margin: 16px 0;
+    font-family: 'Fira Code', monospace;
+    font-size: 9pt;
+    color: #374151;
+    white-space: pre;
+    line-height: 1.8;
+  }
+
+  /* ── TABLE ──────────────────────────────────────────── */
+  table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 9.5pt; }
+  thead tr { background: #1e1b4b; color: white; }
+  thead th { padding: 10px 14px; text-align: left; font-weight: 600; }
+  tbody tr:nth-child(even) { background: #f8f7ff; }
+  tbody tr:nth-child(odd) { background: white; }
+  tbody td { padding: 9px 14px; color: #374151; border-bottom: 1px solid #f3f4f6; }
+  tbody tr:hover { background: #ede9fe; }
+
+  /* ── LAYERS ─────────────────────────────────────────── */
+  .layers {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin: 16px 0;
+  }
+  .layer {
+    padding: 14px 20px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .layer-icon { font-size: 20px; }
+  .layer-info {}
+  .layer-name { font-weight: 700; font-size: 10.5pt; }
+  .layer-desc { font-size: 9pt; margin-top: 2px; }
+  .layer-files { font-size: 8.5pt; font-family: monospace; margin-top: 3px; }
+  .layer.presentation { background: #ede9fe; }
+  .layer.presentation .layer-name { color: #5b21b6; }
+  .layer.domain { background: #dbeafe; }
+  .layer.domain .layer-name { color: #1d4ed8; }
+  .layer.data { background: #d1fae5; }
+  .layer.data .layer-name { color: #065f46; }
+  .layer-arrow { text-align: center; font-size: 18px; color: #9ca3af; }
+
+  /* ── FEATURE CARDS ──────────────────────────────────── */
+  .feature-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 16px 0;
+  }
+  .feature-card {
+    background: #fafafa;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 14px 16px;
+  }
+  .feature-card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+  .feature-num {
+    background: #7c3aed;
+    color: white;
+    font-size: 8pt;
+    font-weight: 700;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .feature-name { font-weight: 700; font-size: 10pt; color: #1e1b4b; }
+  .feature-desc { font-size: 9pt; color: #4b5563; line-height: 1.5; }
+
+  /* ── STEP LIST ──────────────────────────────────────── */
+  .steps { margin: 16px 0; }
+  .step { display: flex; gap: 16px; margin-bottom: 16px; }
+  .step-num {
+    width: 28px;
+    height: 28px;
+    background: linear-gradient(135deg, #7c3aed, #a855f7);
+    color: white;
+    font-size: 9pt;
+    font-weight: 700;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .step-content {}
+  .step-title { font-weight: 700; font-size: 10.5pt; color: #1e1b4b; margin-bottom: 4px; }
+  .step-desc { font-size: 9.5pt; color: #4b5563; line-height: 1.6; }
+
+  /* ── TAGS ───────────────────────────────────────────── */
+  .tags { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; }
+  .tag {
+    font-size: 8.5pt;
+    font-weight: 500;
+    padding: 4px 10px;
+    border-radius: 20px;
+  }
+  .tag.purple { background: #ede9fe; color: #5b21b6; }
+  .tag.blue { background: #dbeafe; color: #1d4ed8; }
+  .tag.green { background: #d1fae5; color: #065f46; }
+  .tag.yellow { background: #fef9c3; color: #854d0e; }
+
+  /* ── FOOTER ─────────────────────────────────────────── */
+  .footer {
+    position: absolute;
+    bottom: 30px;
+    left: 70px;
+    right: 70px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 8pt;
+    color: #9ca3af;
+    border-top: 1px solid #f3f4f6;
+    padding-top: 8px;
+  }
+
+  /* ── PRINT ──────────────────────────────────────────── */
+  @media print {
+    body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════ COVER -->
+<div class="cover">
+  <div class="cover-badge">Kotlin Multiplatform · Android · Clean Architecture</div>
+  <h1>Market <span>KMP</span></h1>
+  <p class="subtitle" style="color:#c4b5fd;font-size:16pt;margin-bottom:16px;">Guia Completo do Projeto</p>
+  <p style="color:#8b7db5;font-size:11pt;margin-bottom:40px;">Do conceito à implementação — tudo que foi construído e por quê</p>
+  <div class="cover-divider"></div>
+  <div class="cover-meta">
+    <div class="cover-meta-item">
+      <span class="label">Projeto</span>
+      <span class="value">Lista de Compras</span>
+    </div>
+    <div class="cover-meta-item">
+      <span class="label">Plataforma</span>
+      <span class="value">Android · iOS ready</span>
+    </div>
+    <div class="cover-meta-item">
+      <span class="label">Linguagem</span>
+      <span class="value">Kotlin 2.0</span>
+    </div>
+    <div class="cover-meta-item">
+      <span class="label">Ano</span>
+      <span class="value">2026</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ TOC -->
+<div class="toc-page">
+  <div class="toc-title">Sumário</div>
+  <p class="toc-subtitle">Este guia cobre toda a construção do app Market — do zero ao produto final.</p>
+
+  <div class="toc-item">
+    <span class="toc-num">01</span>
+    <span class="toc-name">O Problema e a Solução</span>
+    <span class="toc-dots"></span>
+  </div>
+  <div class="toc-item">
+    <span class="toc-num">02</span>
+    <span class="toc-name">O que é Kotlin Multiplatform (KMP)?</span>
+    <span class="toc-dots"></span>
+  </div>
+  <div class="toc-item toc-sub">
+    <span class="toc-num"></span>
+    <span class="toc-name">Como o KMP funciona por dentro · expect/actual · Targets iOS</span>
+    <span class="toc-dots"></span>
+  </div>
+  <div class="toc-item">
+    <span class="toc-num">03</span>
+    <span class="toc-name">Arquitetura do Projeto — Clean Architecture</span>
+    <span class="toc-dots"></span>
+  </div>
+  <div class="toc-item toc-sub">
+    <span class="toc-num"></span>
+    <span class="toc-name">Camadas · Fluxo de dados · Por que separar?</span>
+    <span class="toc-dots"></span>
+  </div>
+  <div class="toc-item">
+    <span class="toc-num">04</span>
+    <span class="toc-name">Camada de Domínio — O Coração Compartilhado</span>
+    <span class="toc-dots"></span>
+  </div>
+  <div class="toc-item toc-sub">
+    <span class="toc-num"></span>
+    <span class="toc-name">GroceryItem · Category · Repository Interface · Use Cases</span>
+    <span class="toc-dots"></span>
+  </div>
+  <div class="toc-item">
+    <span class="toc-num">05</span>
+    <span class="toc-name">Camada de Dados — Room e Repository</span>
+    <span class="toc-dots"></span>
+  </div>
+  <div class="toc-item toc-sub">
+    <span class="toc-num"></span>
+    <span class="toc-name">Entity · DAO · Banco de dados · Mapeamento</span>
+    <span class="toc-dots"></span>
+  </div>
+  <div class="toc-item">
+    <span class="toc-num">06</span>
+    <span class="toc-name">Injeção de Dependências com Koin</span>
+    <span class="toc-dots"></span>
+  </div>
+  <div class="toc-item">
+    <span class="toc-num">07</span>
+    <span class="toc-name">Camada de Apresentação — ViewModel e State</span>
+    <span class="toc-dots"></span>
+  </div>
+  <div class="toc-item toc-sub">
+    <span class="toc-num"></span>
+    <span class="toc-name">StateFlow · combine() · UiState · Ações</span>
+    <span class="toc-dots"></span>
+  </div>
+  <div class="toc-item">
+    <span class="toc-num">08</span>
+    <span class="toc-name">Interface — Jetpack Compose</span>
+    <span class="toc-dots"></span>
+  </div>
+  <div class="toc-item toc-sub">
+    <span class="toc-num"></span>
+    <span class="toc-name">Tela principal · Componentes · Animações · Material 3</span>
+    <span class="toc-dots"></span>
+  </div>
+  <div class="toc-item">
+    <span class="toc-num">09</span>
+    <span class="toc-name">Funcionalidades do App</span>
+    <span class="toc-dots"></span>
+  </div>
+  <div class="toc-item">
+    <span class="toc-num">10</span>
+    <span class="toc-name">iOS — O que está pronto e o que falta</span>
+    <span class="toc-dots"></span>
+  </div>
+  <div class="toc-item">
+    <span class="toc-num">11</span>
+    <span class="toc-name">Stack Tecnológica e Próximos Passos</span>
+    <span class="toc-dots"></span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ CH 01 -->
+<div class="page">
+  <div class="chapter-header">
+    <div class="chapter-num">01</div>
+    <div class="chapter-title-block">
+      <span class="chapter-tag">Contexto</span>
+      <div class="chapter-title">O Problema e a Solução</div>
+    </div>
+  </div>
+
+  <p class="lead">Todo casal que divide as compras do mercado já passou por isso: a lista está no celular de quem ficou em casa, e quem está no mercado não sabe o que pegar — ou compra coisa duplicada.</p>
+
+  <h2>A ideia do app</h2>
+  <p>O Market resolve isso de forma simples: <strong>uma pessoa cadastra os itens</strong> (em casa, com calma), e <strong>a outra marca na hora da compra</strong>. Sem ligações, sem mensagens de WhatsApp com listas bagunçadas.</p>
+
+  <div class="callout important">
+    <div class="callout-icon">🎯</div>
+    <div class="callout-content">
+      <div class="callout-title">Decisão de produto</div>
+      <div class="callout-text">O app foi pensado para dois usuários com papéis distintos: quem planeja e quem executa. Essa divisão de papéis influenciou diretamente o design da interface — a tela principal é otimizada para marcar itens com um toque rápido.</div>
+    </div>
+  </div>
+
+  <h2>Por que construir com KMP?</h2>
+  <p>O objetivo final é ter o mesmo app rodando no Android de uma pessoa e no iPhone da outra. Escrever a lógica duas vezes — uma em Kotlin, outra em Swift — seria ineficiente e arriscado (risco de comportamentos diferentes).</p>
+  <p><strong>Com KMP, a lógica de negócio é escrita uma vez em Kotlin</strong> e funciona em ambas as plataformas. A UI permanece nativa em cada plataforma (Compose no Android, SwiftUI no iOS).</p>
+
+  <div class="callout theory">
+    <div class="callout-icon">📚</div>
+    <div class="callout-content">
+      <div class="callout-title">Princípio: Write once, run anywhere (a lógica)</div>
+      <div class="callout-text">"Don't Repeat Yourself" (DRY) aplicado ao desenvolvimento mobile multiplataforma. O que muda por plataforma é apenas como o usuário interage — a regra do que acontece permanece a mesma.</div>
+    </div>
+  </div>
+
+  <h2>O que foi construído</h2>
+  <p>Um app Android completo e funcional, com toda a camada de negócio estruturada para ser reutilizada no iOS:</p>
+
+  <div class="feature-grid">
+    <div class="feature-card">
+      <div class="feature-card-header"><div class="feature-num">✓</div><div class="feature-name">App Android completo</div></div>
+      <div class="feature-desc">Tela de lista com todas as funcionalidades: CRUD, filtros, busca, progresso.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-card-header"><div class="feature-num">✓</div><div class="feature-name">Domínio compartilhado</div></div>
+      <div class="feature-desc">Modelos, use cases e interface de repositório prontos para iOS.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-card-header"><div class="feature-num">✓</div><div class="feature-name">Framework iOS gerado</div></div>
+      <div class="feature-desc">O shared.xcframework pode ser importado em qualquer projeto Xcode.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-card-header"><div class="feature-num">✓</div><div class="feature-name">Arquitetura escalável</div></div>
+      <div class="feature-desc">Clean Architecture com separação clara de responsabilidades.</div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span>Market KMP — Guia Completo do Projeto</span>
+    <span>Capítulo 01 · O Problema e a Solução</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ CH 02 -->
+<div class="page">
+  <div class="chapter-header">
+    <div class="chapter-num">02</div>
+    <div class="chapter-title-block">
+      <span class="chapter-tag">Teoria + Prática</span>
+      <div class="chapter-title">O que é Kotlin Multiplatform?</div>
+    </div>
+  </div>
+
+  <p class="lead">KMP é a tecnologia da JetBrains que permite compartilhar código Kotlin entre diferentes plataformas — Android, iOS, Desktop, Web — sem abrir mão de UIs nativas em cada uma.</p>
+
+  <div class="callout theory">
+    <div class="callout-icon">📚</div>
+    <div class="callout-content">
+      <div class="callout-title">Como funciona por dentro</div>
+      <div class="callout-text">O compilador Kotlin tem backends diferentes para cada plataforma. Para Android, gera bytecode JVM normal. Para iOS, usa LLVM para compilar Kotlin diretamente para código nativo ARM — sem JVM no iPhone. Para Web, transpila para JavaScript.</div>
+    </div>
+  </div>
+
+  <h2>Estrutura de Source Sets</h2>
+  <p>O módulo <code>shared</code> é dividido em "source sets" — cada um compila para uma plataforma específica. O código em <code>commonMain</code> é compilado para todas.</p>
+
+  <div class="diagram">shared/src/
+├── commonMain/   ← compilado para TODAS as plataformas
+│   └── domain/   ← modelos, use cases, interface repositório
+│
+├── androidMain/  ← código exclusivo Android (herda commonMain)
+│   └── Platform.android.kt
+│
+└── iosMain/      ← código exclusivo iOS (herda commonMain)
+    └── Platform.ios.kt</div>
+
+  <h2>O padrão expect / actual</h2>
+  <p>Quando precisamos de comportamento diferente por plataforma, usamos <code>expect</code> no commonMain para declarar o contrato, e <code>actual</code> em cada plataforma para implementar.</p>
+
+  <pre><span class="comment">// commonMain/Platform.kt — declara o contrato</span>
+<span class="keyword">expect fun</span> <span class="fn">getPlatformName</span>(): <span class="type">String</span>
+
+<span class="comment">// androidMain/Platform.android.kt — implementação Android</span>
+<span class="keyword">actual fun</span> <span class="fn">getPlatformName</span>(): <span class="type">String</span> = <span class="string">"Android"</span>
+
+<span class="comment">// iosMain/Platform.ios.kt — implementação iOS</span>
+<span class="keyword">actual fun</span> <span class="fn">getPlatformName</span>(): <span class="type">String</span> = <span class="string">"iOS"</span></pre>
+
+  <div class="callout practice">
+    <div class="callout-icon">🛠️</div>
+    <div class="callout-content">
+      <div class="callout-title">No projeto Market</div>
+      <div class="callout-text">O expect/actual é usado minimamente — apenas para detecção de plataforma. O mais importante é que <strong>Flow e Coroutines estão em commonMain</strong>, o que significa que toda a reatividade do app (dados em tempo real do banco) funciona multiplataforma sem nenhuma adaptação.</div>
+    </div>
+  </div>
+
+  <h2>Configuração iOS no build.gradle.kts</h2>
+  <pre><span class="keyword">kotlin</span> {
+    <span class="comment">// 3 targets iOS para cobrir todos os casos:</span>
+    <span class="fn">iosX64</span>()            <span class="comment">// Simulador em Mac Intel</span>
+    <span class="fn">iosArm64</span>()          <span class="comment">// iPhone físico</span>
+    <span class="fn">iosSimulatorArm64</span>() <span class="comment">// Simulador em Mac M1/M2/M3</span>
+
+    targets.<span class="fn">withType</span>&lt;<span class="type">KotlinNativeTarget</span>&gt;() {
+        binaries.<span class="fn">framework</span> {
+            baseName = <span class="string">"shared"</span>
+            isStatic = <span class="keyword">true</span> <span class="comment">// framework estático → mais simples de integrar</span>
+        }
+    }
+}</pre>
+
+  <div class="callout tip">
+    <div class="callout-icon">💡</div>
+    <div class="callout-content">
+      <div class="callout-title">Por que isStatic = true?</div>
+      <div class="callout-text">Um framework estático é embutido no binário do app iOS em tempo de compilação. Mais simples de distribuir e sem overhead de carregamento em tempo de execução. A alternativa (dinâmico) é melhor quando múltiplos apps compartilham o mesmo framework — não é o caso aqui.</div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span>Market KMP — Guia Completo do Projeto</span>
+    <span>Capítulo 02 · Kotlin Multiplatform</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ CH 03 -->
+<div class="page">
+  <div class="chapter-header">
+    <div class="chapter-num">03</div>
+    <div class="chapter-title-block">
+      <span class="chapter-tag">Arquitetura</span>
+      <div class="chapter-title">Clean Architecture</div>
+    </div>
+  </div>
+
+  <p class="lead">Clean Architecture organiza o código em camadas concêntricas onde a regra de negócio não depende de nada externo — banco de dados, UI, framework. Isso torna o código testável, substituível e duradouro.</p>
+
+  <h2>As três camadas do projeto</h2>
+
+  <div class="layers">
+    <div class="layer presentation">
+      <div class="layer-icon">🖥️</div>
+      <div class="layer-info">
+        <div class="layer-name">Presentation — androidApp/presentation/</div>
+        <div class="layer-desc">Exibe dados para o usuário e captura suas ações. Só sabe sobre o domínio.</div>
+        <div class="layer-files">GroceryListScreen.kt · GroceryViewModel.kt · GroceryItemCard.kt · AddItemBottomSheet.kt</div>
+      </div>
+    </div>
+    <div class="layer-arrow">↕</div>
+    <div class="layer domain">
+      <div class="layer-icon">🧠</div>
+      <div class="layer-info">
+        <div class="layer-name">Domain — shared/commonMain/domain/</div>
+        <div class="layer-desc">Regras de negócio puras. Não conhece Android, Room ou Compose. É o núcleo compartilhado.</div>
+        <div class="layer-files">GroceryItem.kt · Category.kt · GroceryRepository.kt · GroceryUseCases.kt</div>
+      </div>
+    </div>
+    <div class="layer-arrow">↕</div>
+    <div class="layer data">
+      <div class="layer-icon">🗄️</div>
+      <div class="layer-info">
+        <div class="layer-name">Data — androidApp/data/</div>
+        <div class="layer-desc">Implementa como os dados são armazenados e recuperados. Conhece Room, mas implementa a interface do domínio.</div>
+        <div class="layer-files">GroceryDatabase.kt · GroceryItemDao.kt · GroceryItemEntity.kt · GroceryRepositoryImpl.kt</div>
+      </div>
+    </div>
+  </div>
+
+  <h2>A Regra de Dependência</h2>
+  <p>As dependências apontam sempre para <strong>dentro</strong> — em direção ao domínio. O domínio nunca importa nada das camadas externas.</p>
+
+  <div class="callout important">
+    <div class="callout-icon">⚠️</div>
+    <div class="callout-content">
+      <div class="callout-title">O que isso significa na prática</div>
+      <div class="callout-text">Se amanhã quisermos trocar Room por SQLDelight (para compartilhar o banco com iOS), só precisamos criar uma nova implementação de <code>GroceryRepository</code>. Os use cases, o ViewModel e a UI <strong>não mudam nada</strong> — eles não sabem que o banco mudou.</div>
+    </div>
+  </div>
+
+  <h2>Fluxo completo de uma ação</h2>
+  <p>Exemplo: usuário toca no checkbox de um item para marcá-lo como coletado.</p>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <div class="step-title">UI dispara evento</div>
+        <div class="step-desc"><code>GroceryItemCard</code> chama <code>onToggle(item)</code> quando o checkbox é tocado.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <div class="step-title">ViewModel processa</div>
+        <div class="step-desc"><code>toggleItem(item)</code> inverte o campo <code>isChecked</code> e chama <code>useCases.upsertItem()</code>.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <div class="step-title">Use Case executa</div>
+        <div class="step-desc"><code>UpsertGroceryItemUseCase</code> delega para <code>repository.upsertItem(item)</code>.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-content">
+        <div class="step-title">Repositório persiste</div>
+        <div class="step-desc"><code>GroceryRepositoryImpl</code> converte o item para Entity e chama <code>dao.upsertItem(entity)</code>.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">5</div>
+      <div class="step-content">
+        <div class="step-title">Room notifica via Flow</div>
+        <div class="step-desc">O banco emite nova lista pelo <code>Flow</code> do DAO. O <code>combine()</code> no ViewModel recalcula o <code>UiState</code>. O Compose recompõe automaticamente.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span>Market KMP — Guia Completo do Projeto</span>
+    <span>Capítulo 03 · Clean Architecture</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ CH 04 -->
+<div class="page">
+  <div class="chapter-header">
+    <div class="chapter-num">04</div>
+    <div class="chapter-title-block">
+      <span class="chapter-tag">shared/commonMain</span>
+      <div class="chapter-title">Camada de Domínio</div>
+    </div>
+  </div>
+
+  <p class="lead">O domínio é o módulo mais valioso do projeto — é onde vive a lógica que não muda independente de plataforma, framework ou banco de dados.</p>
+
+  <h2>GroceryItem — o modelo central</h2>
+  <p>Uma <code>data class</code> em Kotlin é perfeita para modelos de domínio: imutável por padrão, com <code>equals()</code>, <code>hashCode()</code> e <code>copy()</code> gerados automaticamente.</p>
+
+  <pre><span class="keyword">data class</span> <span class="type">GroceryItem</span>(
+    <span class="keyword">val</span> id: <span class="type">String</span>,         <span class="comment">// UUID — gerado no ViewModel na criação</span>
+    <span class="keyword">val</span> name: <span class="type">String</span>,       <span class="comment">// "Leite integral"</span>
+    <span class="keyword">val</span> quantity: <span class="type">Double</span>,   <span class="comment">// 1.5 → "1.5 L"</span>
+    <span class="keyword">val</span> unit: <span class="type">String</span>,       <span class="comment">// "L", "kg", "un", "pct"...</span>
+    <span class="keyword">val</span> category: <span class="type">Category</span>, <span class="comment">// enum com emoji e label PT-BR</span>
+    <span class="keyword">val</span> isChecked: <span class="type">Boolean</span>, <span class="comment">// false = no carrinho / true = coletado</span>
+    <span class="keyword">val</span> note: <span class="type">String</span>,       <span class="comment">// "Marca Italac" — opcional</span>
+    <span class="keyword">val</span> createdAt: <span class="type">Long</span>     <span class="comment">// System.currentTimeMillis()</span>
+)</pre>
+
+  <div class="callout tip">
+    <div class="callout-icon">💡</div>
+    <div class="callout-content">
+      <div class="callout-title">Por que Double para quantidade?</div>
+      <div class="callout-text">Para suportar valores como 0.5 kg ou 1.5 L. O app permite incrementos de 0.5 quando a quantidade é menor que 1, e incrementos de 1 acima disso. Isso é tratado na UI — o domínio apenas armazena o valor.</div>
+    </div>
+  </div>
+
+  <h2>Category — enum rico</h2>
+  <p>Em vez de um enum simples, cada categoria carrega seu próprio <strong>label em português</strong> e <strong>emoji</strong> — dados de apresentação colocados no domínio porque são intrínsecos à categoria, não detalhes de UI.</p>
+
+  <pre><span class="keyword">enum class</span> <span class="type">Category</span>(<span class="keyword">val</span> label: <span class="type">String</span>, <span class="keyword">val</span> emoji: <span class="type">String</span>) {
+    <span class="fn">PRODUCE</span>(<span class="string">"Hortifruti"</span>, <span class="string">"🥦"</span>),
+    <span class="fn">DAIRY</span>(<span class="string">"Laticínios"</span>, <span class="string">"🥛"</span>),
+    <span class="fn">MEAT</span>(<span class="string">"Carnes"</span>, <span class="string">"🥩"</span>),
+    <span class="fn">BAKERY</span>(<span class="string">"Padaria"</span>, <span class="string">"🍞"</span>),
+    <span class="fn">BEVERAGES</span>(<span class="string">"Bebidas"</span>, <span class="string">"🥤"</span>),
+    <span class="fn">FROZEN</span>(<span class="string">"Congelados"</span>, <span class="string">"🧊"</span>),
+    <span class="fn">PERSONAL_CARE</span>(<span class="string">"Higiene"</span>, <span class="string">"🧴"</span>),
+    <span class="fn">CLEANING</span>(<span class="string">"Limpeza"</span>, <span class="string">"🧹"</span>),
+    <span class="fn">SNACKS</span>(<span class="string">"Snacks"</span>, <span class="string">"🍿"</span>),
+    <span class="fn">OTHER</span>(<span class="string">"Outros"</span>, <span class="string">"🛒"</span>)
+}</pre>
+
+  <h2>Repository Interface — o contrato</h2>
+  <p>A interface define <em>o que</em> o repositório faz, sem dizer <em>como</em>. O domínio depende desta interface — nunca da implementação concreta (Room).</p>
+
+  <pre><span class="keyword">interface</span> <span class="type">GroceryRepository</span> {
+    <span class="keyword">fun</span> <span class="fn">getAllItems</span>(): <span class="type">Flow</span>&lt;<span class="type">List</span>&lt;<span class="type">GroceryItem</span>&gt;&gt;  <span class="comment">// reativo — emite quando o banco muda</span>
+    <span class="keyword">suspend fun</span> <span class="fn">getItemById</span>(id: <span class="type">String</span>): <span class="type">GroceryItem</span>?
+    <span class="keyword">suspend fun</span> <span class="fn">upsertItem</span>(item: <span class="type">GroceryItem</span>)     <span class="comment">// insert ou update</span>
+    <span class="keyword">suspend fun</span> <span class="fn">deleteItem</span>(id: <span class="type">String</span>)
+    <span class="keyword">suspend fun</span> <span class="fn">clearCheckedItems</span>()               <span class="comment">// deleta todos os marcados</span>
+}</pre>
+
+  <h2>Use Cases — uma responsabilidade cada</h2>
+  <p>Cada use case encapsula <strong>uma única operação de negócio</strong>. O padrão <code>operator fun invoke()</code> permite chamá-los como funções diretas.</p>
+
+  <pre><span class="comment">// Exemplo — GetGroceryItemsUseCase</span>
+<span class="keyword">class</span> <span class="type">GetGroceryItemsUseCase</span>(<span class="keyword">private val</span> repository: <span class="type">GroceryRepository</span>) {
+    <span class="keyword">operator fun</span> <span class="fn">invoke</span>(): <span class="type">Flow</span>&lt;<span class="type">List</span>&lt;<span class="type">GroceryItem</span>&gt;&gt; = repository.<span class="fn">getAllItems</span>()
+}
+
+<span class="comment">// No ViewModel — chamada limpa, parece uma função normal:</span>
+useCases.<span class="fn">getItems</span>()  <span class="comment">// em vez de useCases.getItems.invoke()</span></pre>
+
+  <div class="callout practice">
+    <div class="callout-icon">🛠️</div>
+    <div class="callout-content">
+      <div class="callout-title">Agrupamento em data class</div>
+      <div class="callout-text">Todos os 4 use cases são agrupados em <code>GroceryUseCases(getItems, upsertItem, deleteItem, clearChecked)</code>. Assim o ViewModel recebe uma única dependência em vez de quatro — e o Koin injeta tudo de uma vez.</div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span>Market KMP — Guia Completo do Projeto</span>
+    <span>Capítulo 04 · Camada de Domínio</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ CH 05 -->
+<div class="page">
+  <div class="chapter-header">
+    <div class="chapter-num">05</div>
+    <div class="chapter-title-block">
+      <span class="chapter-tag">androidApp/data</span>
+      <div class="chapter-title">Camada de Dados — Room</div>
+    </div>
+  </div>
+
+  <p class="lead">A camada de dados é a implementação concreta do repositório. Ela conhece o Room, converte entre Entity e domínio, e expõe os dados como Flow reativo.</p>
+
+  <h2>Por que precisamos de uma Entity separada?</h2>
+  <p>O domínio tem <code>GroceryItem</code> com <code>category: Category</code> (enum). O Room não sabe armazenar enums diretamente — armazena Strings. A Entity é a representação "achatada" do domínio para o banco.</p>
+
+  <table>
+    <thead><tr><th>GroceryItem (domínio)</th><th>GroceryItemEntity (banco)</th></tr></thead>
+    <tbody>
+      <tr><td><code>category: Category</code></td><td><code>category: String</code> ("DAIRY")</td></tr>
+      <tr><td>Objeto rico com métodos</td><td>Data class simples, anotada com @Entity</td></tr>
+      <tr><td>Imutável, Kotlin puro</td><td>Conhece Room, Android-only</td></tr>
+    </tbody>
+  </table>
+
+  <h2>O DAO — queries que retornam Flow</h2>
+  <p>A query principal tem uma ordenação inteligente que garante a experiência certa: itens não marcados primeiro, agrupados por categoria, em ordem alfabética.</p>
+
+  <pre><span class="keyword">@Dao</span>
+<span class="keyword">interface</span> <span class="type">GroceryItemDao</span> {
+
+    <span class="keyword">@Query</span>(<span class="string">"""
+        SELECT * FROM grocery_items
+        ORDER BY isChecked ASC,   -- não marcados primeiro
+                 category ASC,    -- agrupa por categoria
+                 name ASC         -- alfabético dentro da categoria
+    """</span>)
+    <span class="keyword">fun</span> <span class="fn">getAllItems</span>(): <span class="type">Flow</span>&lt;<span class="type">List</span>&lt;<span class="type">GroceryItemEntity</span>&gt;&gt;  <span class="comment">// reativo!</span>
+
+    <span class="keyword">@Insert</span>(onConflict = <span class="type">OnConflictStrategy</span>.REPLACE)
+    <span class="keyword">suspend fun</span> <span class="fn">upsertItem</span>(item: <span class="type">GroceryItemEntity</span>)  <span class="comment">// insert ou update</span>
+
+    <span class="keyword">@Query</span>(<span class="string">"DELETE FROM grocery_items WHERE id = :id"</span>)
+    <span class="keyword">suspend fun</span> <span class="fn">deleteItem</span>(id: <span class="type">String</span>)
+
+    <span class="keyword">@Query</span>(<span class="string">"DELETE FROM grocery_items WHERE isChecked = 1"</span>)
+    <span class="keyword">suspend fun</span> <span class="fn">clearCheckedItems</span>()  <span class="comment">// limpa todos marcados de uma vez</span>
+}</pre>
+
+  <div class="callout theory">
+    <div class="callout-icon">📚</div>
+    <div class="callout-content">
+      <div class="callout-title">Como o Flow do Room funciona</div>
+      <div class="callout-text">Quando Room retorna um <code>Flow</code>, ele automaticamente emite uma nova lista toda vez que qualquer linha da tabela muda. Não é necessário chamar "refresh" manualmente — a UI se atualiza sozinha quando o banco muda.</div>
+    </div>
+  </div>
+
+  <h2>GroceryRepositoryImpl — mapeamento bidirecional</h2>
+  <pre><span class="keyword">class</span> <span class="type">GroceryRepositoryImpl</span>(database: <span class="type">GroceryDatabase</span>) : <span class="type">GroceryRepository</span> {
+
+    <span class="keyword">private val</span> dao = database.<span class="fn">groceryItemDao</span>()
+
+    <span class="comment">// Entity → Domínio (com enum.valueOf para recriar o enum)</span>
+    <span class="keyword">private fun</span> <span class="type">GroceryItemEntity</span>.<span class="fn">toDomain</span>() = <span class="type">GroceryItem</span>(
+        id, name, quantity, unit,
+        category = <span class="type">Category</span>.<span class="fn">valueOf</span>(category),  <span class="comment">// "DAIRY" → Category.DAIRY</span>
+        isChecked, note, createdAt
+    )
+
+    <span class="comment">// Domínio → Entity (enum para String)</span>
+    <span class="keyword">private fun</span> <span class="type">GroceryItem</span>.<span class="fn">toEntity</span>() = <span class="type">GroceryItemEntity</span>(
+        id, name, quantity, unit,
+        category = category.name,  <span class="comment">// Category.DAIRY → "DAIRY"</span>
+        isChecked, note, createdAt
+    )
+
+    <span class="keyword">override fun</span> <span class="fn">getAllItems</span>() = dao.<span class="fn">getAllItems</span>().<span class="fn">map</span> { list ->
+        list.<span class="fn">map</span> { it.<span class="fn">toDomain</span>() }  <span class="comment">// mapeia cada entity para domínio</span>
+    }
+}</pre>
+
+  <div class="footer">
+    <span>Market KMP — Guia Completo do Projeto</span>
+    <span>Capítulo 05 · Camada de Dados</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ CH 06 -->
+<div class="page">
+  <div class="chapter-header">
+    <div class="chapter-num">06</div>
+    <div class="chapter-title-block">
+      <span class="chapter-tag">androidApp/di</span>
+      <div class="chapter-title">Injeção de Dependências com Koin</div>
+    </div>
+  </div>
+
+  <p class="lead">Injeção de dependências resolve um problema simples: como fornecer os objetos certos para quem precisa deles, sem que cada classe precise saber como construir suas próprias dependências.</p>
+
+  <div class="callout theory">
+    <div class="callout-icon">📚</div>
+    <div class="callout-content">
+      <div class="callout-title">O problema sem DI</div>
+      <div class="callout-text">Sem injeção, o ViewModel precisaria criar o banco, criar o repositório, criar os use cases — dentro do seu construtor. Isso acopla tudo, impossibilita testes e complica mudanças. Com DI, o ViewModel <em>pede</em> o que precisa, e o container entrega.</div>
+    </div>
+  </div>
+
+  <h2>O módulo Koin do projeto</h2>
+  <pre><span class="keyword">val</span> appModule = <span class="fn">module</span> {
+
+    <span class="comment">// Banco — singleton (uma instância para todo o app)</span>
+    <span class="fn">single</span> { <span class="type">GroceryDatabase</span>.<span class="fn">create</span>(<span class="fn">androidContext</span>()) }
+
+    <span class="comment">// Repositório — singleton, implementa a interface do domínio</span>
+    <span class="fn">single</span>&lt;<span class="type">GroceryRepository</span>&gt; { <span class="type">GroceryRepositoryImpl</span>(<span class="fn">get</span>()) }
+
+    <span class="comment">// Use Cases — singleton, get() busca GroceryRepository automaticamente</span>
+    <span class="fn">single</span> {
+        <span class="type">GroceryUseCases</span>(
+            getItems    = <span class="type">GetGroceryItemsUseCase</span>(<span class="fn">get</span>()),
+            upsertItem  = <span class="type">UpsertGroceryItemUseCase</span>(<span class="fn">get</span>()),
+            deleteItem  = <span class="type">DeleteGroceryItemUseCase</span>(<span class="fn">get</span>()),
+            clearChecked = <span class="type">ClearCheckedItemsUseCase</span>(<span class="fn">get</span>())
+        )
+    }
+
+    <span class="comment">// ViewModel — factory (nova instância por tela)</span>
+    <span class="fn">viewModel</span> { <span class="type">GroceryViewModel</span>(<span class="fn">get</span>()) }
+}</pre>
+
+  <h2>single vs viewModel</h2>
+  <table>
+    <thead><tr><th>Escopo</th><th>Comportamento</th><th>Quando usar</th></tr></thead>
+    <tbody>
+      <tr><td><code>single</code></td><td>Uma instância compartilhada no app inteiro</td><td>Banco, repositório, use cases</td></tr>
+      <tr><td><code>viewModel</code></td><td>Nova instância por ViewModel, destruída com ele</td><td>ViewModels — ligados ao ciclo de vida</td></tr>
+      <tr><td><code>factory</code></td><td>Nova instância a cada chamada get()</td><td>Objetos leves sem estado</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Como o Koin é iniciado</h2>
+  <pre><span class="comment">// MarketApplication.kt</span>
+<span class="keyword">class</span> <span class="type">MarketApplication</span> : <span class="type">Application</span>() {
+    <span class="keyword">override fun</span> <span class="fn">onCreate</span>() {
+        <span class="keyword">super</span>.<span class="fn">onCreate</span>()
+        <span class="fn">startKoin</span> {
+            <span class="fn">androidLogger</span>()
+            <span class="fn">androidContext</span>(<span class="keyword">this</span>@<span class="type">MarketApplication</span>)
+            <span class="fn">modules</span>(appModule)
+        }
+    }
+}</pre>
+
+  <h2>Como a tela usa o ViewModel</h2>
+  <pre><span class="comment">// GroceryListScreen.kt — Koin injeta automaticamente</span>
+<span class="keyword">@Composable</span>
+<span class="keyword">fun</span> <span class="fn">GroceryListScreen</span>(
+    viewModel: <span class="type">GroceryViewModel</span> = <span class="fn">koinViewModel</span>()  <span class="comment">// ← magia do Koin + Compose</span>
+) { ... }</pre>
+
+  <div class="callout practice">
+    <div class="callout-icon">🛠️</div>
+    <div class="callout-content">
+      <div class="callout-title">koinViewModel() vs viewModel()</div>
+      <div class="callout-text"><code>koinViewModel()</code> é o equivalente do <code>viewModel()</code> padrão do Compose, mas usa o Koin para criar a instância. Isso significa que o ViewModel recebe suas dependências automaticamente — sem precisar de ViewModelFactory manual.</div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span>Market KMP — Guia Completo do Projeto</span>
+    <span>Capítulo 06 · Injeção de Dependências</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ CH 07 -->
+<div class="page">
+  <div class="chapter-header">
+    <div class="chapter-num">07</div>
+    <div class="chapter-title-block">
+      <span class="chapter-tag">presentation/viewmodel</span>
+      <div class="chapter-title">ViewModel e Gerenciamento de Estado</div>
+    </div>
+  </div>
+
+  <p class="lead">O ViewModel é a ponte entre o domínio e a UI. Ele mantém o estado da tela, processa ações do usuário e expõe dados como StateFlow — que o Compose observa automaticamente.</p>
+
+  <h2>O UiState — estado completo da tela</h2>
+  <p>Todo o estado necessário para renderizar a tela fica em uma única data class imutável. Propriedades computadas (calculadas a partir dos dados) ficam como <code>val</code> dentro da data class.</p>
+
+  <pre><span class="keyword">data class</span> <span class="type">GroceryUiState</span>(
+    <span class="keyword">val</span> allItems: <span class="type">List</span>&lt;<span class="type">GroceryItem</span>&gt; = <span class="fn">emptyList</span>(),
+    <span class="keyword">val</span> isLoading: <span class="type">Boolean</span> = <span class="keyword">true</span>,
+    <span class="keyword">val</span> filter: <span class="type">FilterOption</span> = <span class="type">FilterOption</span>.ALL,
+    <span class="keyword">val</span> searchQuery: <span class="type">String</span> = <span class="string">""</span>
+) {
+    <span class="comment">// Computado: filtra por opção + texto de busca</span>
+    <span class="keyword">val</span> filteredItems: <span class="type">List</span>&lt;<span class="type">GroceryItem</span>&gt; <span class="keyword">get</span>() = allItems
+        .<span class="fn">filter</span> { <span class="keyword">when</span> (filter) {
+            PENDING -> !it.isChecked; CHECKED -> it.isChecked; <span class="keyword">else</span> -> <span class="keyword">true</span>
+        }}
+        .<span class="fn">filter</span> { it.name.<span class="fn">contains</span>(searchQuery, ignoreCase = <span class="keyword">true</span>) }
+
+    <span class="comment">// Computado: agrupa os filtrados por categoria</span>
+    <span class="keyword">val</span> groupedItems: <span class="type">Map</span>&lt;<span class="type">Category</span>, <span class="type">List</span>&lt;<span class="type">GroceryItem</span>&gt;&gt; <span class="keyword">get</span>() =
+        filteredItems.<span class="fn">groupBy</span> { it.category }
+
+    <span class="keyword">val</span> checkedCount <span class="keyword">get</span>() = allItems.<span class="fn">count</span> { it.isChecked }
+    <span class="keyword">val</span> totalCount   <span class="keyword">get</span>() = allItems.size
+    <span class="keyword">val</span> progress     <span class="keyword">get</span>() = <span class="keyword">if</span> (totalCount == <span class="num">0</span>) <span class="num">0f</span> <span class="keyword">else</span> checkedCount / totalCount.<span class="fn">toFloat</span>()
+}</pre>
+
+  <h2>combine() — o coração reativo do ViewModel</h2>
+  <p>O estado final é uma <strong>combinação reativa de 4 flows</strong>. Qualquer mudança em qualquer um deles reconstrói o UiState automaticamente.</p>
+
+  <pre><span class="keyword">val</span> uiState = <span class="fn">combine</span>(
+    useCases.<span class="fn">getItems</span>(),  <span class="comment">// Flow do banco — emite quando dados mudam</span>
+    _filter,               <span class="comment">// StateFlow — filtro selecionado</span>
+    _searchQuery,          <span class="comment">// StateFlow — texto da busca</span>
+    _isLoading             <span class="comment">// StateFlow — estado de carregamento</span>
+) { items, filter, query, loading ->
+    <span class="type">GroceryUiState</span>(allItems = items, filter = filter,
+                   searchQuery = query, isLoading = loading)
+}.<span class="fn">stateIn</span>(
+    scope = viewModelScope,
+    started = <span class="type">SharingStarted</span>.<span class="fn">WhileSubscribed</span>(<span class="num">5_000</span>),  <span class="comment">// ativo por 5s sem observadores</span>
+    initialValue = <span class="type">GroceryUiState</span>()
+)</pre>
+
+  <div class="callout tip">
+    <div class="callout-icon">💡</div>
+    <div class="callout-content">
+      <div class="callout-title">Por que WhileSubscribed(5_000)?</div>
+      <div class="callout-text">Quando o usuário gira a tela, o Composable é destruído e recriado. Sem o delay de 5 segundos, isso desconectaria e reconectaria o Flow do banco imediatamente. Com o delay, a conexão permanece por até 5 segundos — tempo suficiente para a rotação completar sem custo extra.</div>
+    </div>
+  </div>
+
+  <h2>Como o ViewModel preserva dados na edição</h2>
+  <pre><span class="keyword">fun</span> <span class="fn">updateItem</span>(original: <span class="type">GroceryItem</span>, name: <span class="type">String</span>, ...) {
+    viewModelScope.<span class="fn">launch</span> {
+        useCases.<span class="fn">upsertItem</span>(
+            original.<span class="fn">copy</span>(      <span class="comment">// copy() preserva o que não mudou</span>
+                name = name.<span class="fn">trim</span>(),
+                <span class="comment">// id, createdAt e isChecked = preservados do original</span>
+            )
+        )
+    }
+}</pre>
+
+  <div class="footer">
+    <span>Market KMP — Guia Completo do Projeto</span>
+    <span>Capítulo 07 · ViewModel e Estado</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ CH 08 -->
+<div class="page">
+  <div class="chapter-header">
+    <div class="chapter-num">08</div>
+    <div class="chapter-title-block">
+      <span class="chapter-tag">presentation/screen + components</span>
+      <div class="chapter-title">Interface — Jetpack Compose</div>
+    </div>
+  </div>
+
+  <p class="lead">Compose é um framework de UI declarativo: você descreve como a tela deve parecer dado um estado, e o Compose decide o que precisa ser atualizado. Não existe "atualizar o texto do botão" — você recompõe a tela com o novo estado.</p>
+
+  <h2>GroceryListScreen — a tela principal</h2>
+  <p>A tela observa o UiState e delega cada interação ao ViewModel. Estado local (modais abertos) fica no Composable com <code>remember</code>.</p>
+
+  <pre><span class="keyword">@Composable</span>
+<span class="keyword">fun</span> <span class="fn">GroceryListScreen</span>(viewModel: <span class="type">GroceryViewModel</span> = <span class="fn">koinViewModel</span>()) {
+    <span class="keyword">val</span> uiState <span class="keyword">by</span> viewModel.uiState.<span class="fn">collectAsStateWithLifecycle</span>()
+
+    <span class="comment">// Estado local — só relevante para esta tela</span>
+    <span class="keyword">var</span> showAddSheet         <span class="keyword">by</span> <span class="fn">remember</span> { <span class="fn">mutableStateOf</span>(<span class="keyword">false</span>) }
+    <span class="keyword">var</span> itemToEdit           <span class="keyword">by</span> <span class="fn">remember</span> { <span class="fn">mutableStateOf</span>&lt;<span class="type">GroceryItem?</span>&gt;(<span class="keyword">null</span>) }
+    <span class="keyword">var</span> searchActive         <span class="keyword">by</span> <span class="fn">remember</span> { <span class="fn">mutableStateOf</span>(<span class="keyword">false</span>) }
+    <span class="keyword">var</span> showClearConfirmDialog <span class="keyword">by</span> <span class="fn">remember</span> { <span class="fn">mutableStateOf</span>(<span class="keyword">false</span>) }
+    ...
+}</pre>
+
+  <div class="callout theory">
+    <div class="callout-icon">📚</div>
+    <div class="callout-content">
+      <div class="callout-title">collectAsStateWithLifecycle vs collectAsState</div>
+      <div class="callout-text"><code>collectAsStateWithLifecycle()</code> é a versão lifecycle-aware: suspende a coleta quando o app vai para background (tela apagada, app minimizado). Isso economiza recursos — o Flow não processa dados que não serão exibidos.</div>
+    </div>
+  </div>
+
+  <h2>GroceryItemCard — o componente mais rico</h2>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">→</div>
+      <div class="step-content">
+        <div class="step-title">SwipeToDismissBox</div>
+        <div class="step-desc">Detecta swipe da direita para a esquerda com threshold de 40%. Exibe fundo vermelho com ícone de lixeira. Não deleta imediatamente — apenas abre o dialog de confirmação.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">→</div>
+      <div class="step-content">
+        <div class="step-title">AlertDialog de confirmação</div>
+        <div class="step-desc">Pergunta "Deseja remover X da lista?" com botão vermelho "Remover" e "Cancelar". Só deleta após confirmação explícita — evita exclusões acidentais.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">→</div>
+      <div class="step-content">
+        <div class="step-title">Estilo condicional ao estado</div>
+        <div class="step-desc">Quando <code>isChecked = true</code>: nome com strikethrough, opacidade reduzida, card com cor diferente. Feedback visual imediato sem navegação.</div>
+      </div>
+    </div>
+  </div>
+
+  <h2>AddItemBottomSheet — formulário inteligente</h2>
+  <p>O mesmo componente funciona para adicionar e editar, controlado pela prop <code>initialItem</code>:</p>
+
+  <table>
+    <thead><tr><th>Campo</th><th>Comportamento</th></tr></thead>
+    <tbody>
+      <tr><td>Nome</td><td>Obrigatório, validação na tentativa de salvar, autoCapitalize</td></tr>
+      <tr><td>Quantidade</td><td>Botões +/− com incremento inteligente (0.5 abaixo de 1, 1 acima)</td></tr>
+      <tr><td>Unidade</td><td>10 chips em FlowRow — quebra de linha automática</td></tr>
+      <tr><td>Categoria</td><td>Grid 2 colunas com emoji + label, seleção visual com borda</td></tr>
+      <tr><td>Nota</td><td>Opcional, campo de texto simples</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Animações e polish</h2>
+  <div class="tags">
+    <span class="tag purple">animateItem() — lista</span>
+    <span class="tag blue">animateContentSize()</span>
+    <span class="tag green">pulsação no EmptyState</span>
+    <span class="tag yellow">cores por categoria</span>
+    <span class="tag purple">sticky headers</span>
+    <span class="tag blue">barra de progresso arredondada</span>
+    <span class="tag green">celebração 🎉 a 100%</span>
+  </div>
+
+  <div class="footer">
+    <span>Market KMP — Guia Completo do Projeto</span>
+    <span>Capítulo 08 · Interface Compose</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ CH 09 -->
+<div class="page">
+  <div class="chapter-header">
+    <div class="chapter-num">09</div>
+    <div class="chapter-title-block">
+      <span class="chapter-tag">Produto</span>
+      <div class="chapter-title">Funcionalidades do App</div>
+    </div>
+  </div>
+
+  <p class="lead">10 funcionalidades construídas com foco na experiência real de uso — do cadastro em casa até a marcação no mercado.</p>
+
+  <div class="feature-grid">
+    <div class="feature-card">
+      <div class="feature-card-header"><div class="feature-num">1</div><div class="feature-name">Criar item</div></div>
+      <div class="feature-desc">Bottom sheet com formulário completo. UUID gerado automaticamente. Timestamp capturado na criação.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-card-header"><div class="feature-num">2</div><div class="feature-name">Listar itens</div></div>
+      <div class="feature-desc">LazyColumn com sticky headers por categoria. Ordenação: não marcados primeiro, por categoria, por nome.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-card-header"><div class="feature-num">3</div><div class="feature-name">Editar item</div></div>
+      <div class="feature-desc">Ícone de lápis abre o mesmo bottom sheet pré-preenchido. Preserva ID, data de criação e status de marcação.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-card-header"><div class="feature-num">4</div><div class="feature-name">Excluir item</div></div>
+      <div class="feature-desc">Swipe para a esquerda revela fundo vermelho. Dialog de confirmação previne exclusões acidentais.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-card-header"><div class="feature-num">5</div><div class="feature-name">Marcar/desmarcar</div></div>
+      <div class="feature-desc">Checkbox com toque único. Strikethrough no nome + opacidade reduzida + item vai para o final da lista.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-card-header"><div class="feature-num">6</div><div class="feature-name">Limpar marcados</div></div>
+      <div class="feature-desc">Botão DeleteSweep aparece quando há itens marcados. Dialog mostra contagem exata antes de confirmar.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-card-header"><div class="feature-num">7</div><div class="feature-name">Filtrar</div></div>
+      <div class="feature-desc">Três chips: Todos / Pendentes / Feitos. Estado mantido no ViewModel — sobrevive rotação de tela.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-card-header"><div class="feature-num">8</div><div class="feature-name">Buscar</div></div>
+      <div class="feature-desc">DockedSearchBar com filtro em tempo real. Case-insensitive. Combinado com o filtro ativo.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-card-header"><div class="feature-num">9</div><div class="feature-name">Progresso</div></div>
+      <div class="feature-desc">Card com "X de Y itens", porcentagem e barra linear animada. "Tudo coletado! 🎉" quando 100%.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-card-header"><div class="feature-num">10</div><div class="feature-name">Estado vazio</div></div>
+      <div class="feature-desc">Ícone pulsante, mensagem contextual (lista vazia vs. nenhum resultado para a busca).</div>
+    </div>
+  </div>
+
+  <div class="callout practice">
+    <div class="callout-icon">🛠️</div>
+    <div class="callout-content">
+      <div class="callout-title">Decisão de UX: confirmação em ações destrutivas</div>
+      <div class="callout-text">Tanto a exclusão individual (swipe) quanto a exclusão em lote (limpar marcados) têm AlertDialog de confirmação. A diferença é que o "limpar marcados" mostra a contagem exata de itens que serão removidos — contextualiza o impacto antes da ação.</div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span>Market KMP — Guia Completo do Projeto</span>
+    <span>Capítulo 09 · Funcionalidades</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ CH 10 -->
+<div class="page">
+  <div class="chapter-header">
+    <div class="chapter-num">10</div>
+    <div class="chapter-title-block">
+      <span class="chapter-tag">KMP · iOS</span>
+      <div class="chapter-title">iOS — O que está pronto e o que falta</div>
+    </div>
+  </div>
+
+  <p class="lead">O app Android está 100% funcional. A parte iOS está na metade mais fácil do caminho — o núcleo (lógica) está pronto, falta a casca (UI).</p>
+
+  <h2>O que o iOS já herda hoje</h2>
+  <table>
+    <thead><tr><th>O que está pronto</th><th>Arquivo</th></tr></thead>
+    <tbody>
+      <tr><td>Modelo GroceryItem com todos os campos</td><td>shared/domain/model/GroceryItem.kt</td></tr>
+      <tr><td>Enum Category com labels PT-BR e emojis</td><td>shared/domain/model/Category.kt</td></tr>
+      <tr><td>Interface GroceryRepository</td><td>shared/domain/repository/</td></tr>
+      <tr><td>Todos os 4 use cases</td><td>shared/domain/usecase/</td></tr>
+      <tr><td>Flow reativo (kotlinx-coroutines-core)</td><td>build.gradle.kts commonMain</td></tr>
+      <tr><td>Framework estático gerado (3 targets)</td><td>binaries.framework { isStatic=true }</td></tr>
+    </tbody>
+  </table>
+
+  <h2>O que precisa ser construído para iOS</h2>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <div class="step-title">Criar projeto SwiftUI no Xcode</div>
+        <div class="step-desc">Projeto iOS novo, importar o <code>shared.xcframework</code> como dependência local.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <div class="step-title">Implementar GroceryRepository em Swift</div>
+        <div class="step-desc">Criar <code>GroceryRepositoryImpl.swift</code> usando Core Data ou SwiftData. Mesma interface, implementação nativa iOS.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <div class="step-title">Adaptar Flow para Swift com SKIE ou KMP-NativeCoroutines</div>
+        <div class="step-desc"><code>Flow&lt;List&lt;GroceryItem&gt;&gt;</code> precisa ser exposto como <code>AsyncStream</code> no Swift. Bibliotecas como SKIE fazem isso automaticamente.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-content">
+        <div class="step-title">Criar UI em SwiftUI</div>
+        <div class="step-desc">Lista, filtros, busca, bottom sheet de adição. Os use cases são chamados diretamente do ViewModel Swift.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout important">
+    <div class="callout-icon">🚀</div>
+    <div class="callout-content">
+      <div class="callout-title">O valor real do KMP neste projeto</div>
+      <div class="callout-text">Quando o app iOS for construído, ele vai usar exatamente a mesma lógica que o Android. Mesmas categorias, mesmas regras de validação, mesmo comportamento de upsert, mesma query de ordenação. Zero risco de divergência de comportamento entre plataformas — porque é literalmente o mesmo código compilado para cada uma.</div>
+    </div>
+  </div>
+
+  <h2>Comando para gerar o framework iOS</h2>
+  <pre>./gradlew :shared:linkDebugFrameworkIosSimulatorArm64
+<span class="comment"># Gera: shared/build/bin/iosSimulatorArm64/debugFramework/shared.framework</span></pre>
+
+  <div class="footer">
+    <span>Market KMP — Guia Completo do Projeto</span>
+    <span>Capítulo 10 · iOS</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ CH 11 -->
+<div class="page">
+  <div class="chapter-header">
+    <div class="chapter-num">11</div>
+    <div class="chapter-title-block">
+      <span class="chapter-tag">Tecnologia · Evolução</span>
+      <div class="chapter-title">Stack e Próximos Passos</div>
+    </div>
+  </div>
+
+  <h2>Stack completa</h2>
+  <table>
+    <thead><tr><th>Tecnologia</th><th>Versão</th><th>Papel no projeto</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Kotlin</strong></td><td>2.0.0</td><td>Linguagem principal — Android e shared</td></tr>
+      <tr><td><strong>KMP</strong></td><td>2.0.0</td><td>Compartilha domínio entre Android e iOS</td></tr>
+      <tr><td><strong>Jetpack Compose</strong></td><td>BOM 2024.09</td><td>UI declarativa Android</td></tr>
+      <tr><td><strong>Material Design 3</strong></td><td>—</td><td>Design system com suporte a dark mode</td></tr>
+      <tr><td><strong>Room</strong></td><td>2.6.1</td><td>Banco SQLite com Flow reativo</td></tr>
+      <tr><td><strong>Koin</strong></td><td>3.5.6</td><td>Injeção de dependências sem reflexão</td></tr>
+      <tr><td><strong>Coroutines + Flow</strong></td><td>1.8.1</td><td>Assincronismo e reatividade</td></tr>
+      <tr><td><strong>KSP</strong></td><td>2.0.0-1.0.21</td><td>Geração de código do Room em compile-time</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Próximos passos sugeridos</h2>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">🔴</div>
+      <div class="step-content">
+        <div class="step-title">App iOS (alta prioridade)</div>
+        <div class="step-desc">Completar o objetivo original do projeto. O domínio já está pronto — é "só" a UI.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">🔴</div>
+      <div class="step-content">
+        <div class="step-title">Sincronização em tempo real</div>
+        <div class="step-desc">Firebase Firestore ou Supabase para sincronizar a lista entre os dois celulares. A pessoa que está em casa vê em tempo real o que foi marcado no mercado.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">🟡</div>
+      <div class="step-content">
+        <div class="step-title">Notificações push</div>
+        <div class="step-desc">Avisar quando a lista for atualizada — "Leite foi adicionado à lista."</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">🟡</div>
+      <div class="step-content">
+        <div class="step-title">Testes unitários</div>
+        <div class="step-desc">Use cases em <code>commonMain</code> são testáveis com <code>kotlin.test</code> sem Android. Testar a lógica de filtragem e agrupamento do UiState.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">🟢</div>
+      <div class="step-content">
+        <div class="step-title">Histórico e sugestões</div>
+        <div class="step-desc">Guardar itens já comprados para sugerir rapidamente na próxima lista.</div>
+      </div>
+    </div>
+  </div>
+
+  <h2>O que este projeto demonstra</h2>
+  <div class="callout practice">
+    <div class="callout-icon">✅</div>
+    <div class="callout-content">
+      <div class="callout-title">Competências demonstradas</div>
+      <div class="callout-text">
+        <strong>KMP:</strong> estrutura multiplataforma com expect/actual, framework iOS configurado, Flow em commonMain.<br><br>
+        <strong>Arquitetura:</strong> Clean Architecture completa, Repository pattern, Use Cases com responsabilidade única.<br><br>
+        <strong>Android moderno:</strong> Compose, Material 3, Room com Flow, Koin, StateFlow + combine(), collectAsStateWithLifecycle.<br><br>
+        <strong>UX:</strong> animações, estados vazios, confirmações antes de ações destrutivas, feedback visual imediato.
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span>Market KMP — Guia Completo do Projeto</span>
+    <span>Capítulo 11 · Stack e Próximos Passos</span>
+  </div>
+</div>
+
+</body>
+</html>
