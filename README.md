@@ -53,17 +53,26 @@ market/
 │           ├── repository/         # Interface GroceryRepository
 │           └── usecase/            # GetItems, UpsertItem, DeleteItem, ClearChecked
 │
-└── androidApp/                     # Aplicativo Android
-    └── src/main/kotlin/
-        ├── data/
-        │   ├── local/              # Room: GroceryDatabase, GroceryItemDao, GroceryItemEntity
-        │   └── repository/         # GroceryRepositoryImpl
-        ├── di/                     # AppModule (Koin)
-        └── presentation/
-            ├── viewmodel/          # GroceryViewModel, GroceryUiState, FilterOption
-            ├── screen/             # GroceryListScreen
-            ├── components/         # GroceryItemCard, AddItemBottomSheet, EmptyStateView
-            └── theme/              # Material 3: cores, tipografia
+├── androidApp/                     # Aplicativo Android
+│   └── src/main/kotlin/
+│       ├── data/
+│       │   ├── local/              # Room: GroceryDatabase, GroceryItemDao, GroceryItemEntity
+│       │   └── repository/         # GroceryRepositoryImpl
+│       ├── di/                     # AppModule (Koin)
+│       └── presentation/
+│           ├── viewmodel/          # GroceryViewModel, GroceryUiState, FilterOption
+│           ├── screen/             # GroceryListScreen
+│           ├── components/         # GroceryItemCard, AddItemBottomSheet, EmptyStateView
+│           └── theme/              # Material 3: cores, tipografia
+│
+└── iosApp/                         # Aplicativo iOS (SwiftUI + SwiftData)
+    └── iosApp/
+        ├── Domain/                 # GroceryItem.swift, Category.swift
+        ├── Data/                   # GroceryStore.swift (SwiftData @Model + repositório)
+        └── Presentation/
+            ├── ViewModels/         # GroceryViewModel.swift (@Observable)
+            └── Views/              # GroceryListView, GroceryItemRow, AddItemSheet,
+                                    # ProgressCard, FilterRow, EmptyStateView
 ```
 
 ### Fluxo de dados
@@ -94,6 +103,7 @@ Ação do usuário
 
 ## 🛠️ Tecnologias
 
+### Android
 | Tecnologia | Versão | Uso |
 |---|---|---|
 | Kotlin Multiplatform | 2.0.0 | Compartilhamento de código entre plataformas |
@@ -104,9 +114,16 @@ Ação do usuário
 | Coroutines / Flow | 1.8.1 | Programação assíncrona e reativa |
 | Lifecycle / ViewModel | 2.8.6 | Gerenciamento de estado e ciclo de vida |
 
+### iOS
+| Tecnologia | Versão | Uso |
+|---|---|---|
+| SwiftUI | iOS 17+ | UI declarativa |
+| SwiftData | iOS 17+ | Banco de dados local (persistência) |
+| Swift Observation (`@Observable`) | iOS 17+ | Gerenciamento de estado reativo |
+
 **Alvos de build:**
 - Android: `minSdk 26` · `targetSdk 34` · `compileSdk 34`
-- iOS: `X64 · Arm64 · SimulatorArm64` (framework KMP)
+- iOS: `minDeploymentTarget 17.0` · `iPhone + iPad`
 - Java: target 17
 
 ---
@@ -130,6 +147,26 @@ O app usa **Material You** com cores dinâmicas no Android 12+. O esquema padrã
 
 ---
 
+## ✅ Testes
+
+O projeto inclui testes unitários cobrindo as três camadas principais:
+
+### `shared/commonTest` — Use Cases
+- `GroceryUseCasesTest` — 13 testes cobrindo `GetGroceryItemsUseCase`, `UpsertGroceryItemUseCase`, `DeleteGroceryItemUseCase` e `ClearCheckedItemsUseCase`
+- Usa `FakeGroceryRepository` baseado em `MutableStateFlow` — sem mocking library
+
+### `androidApp/test` — ViewModel e UiState
+- `GroceryUiStateTest` — 12 testes das propriedades computadas (`filteredItems`, `groupedItems`, `progress`, `checkedCount`)
+- `GroceryViewModelTest` — 17 testes do `GroceryViewModel` com `UnconfinedTestDispatcher` e `Dispatchers.setMain`
+
+```bash
+# Rodar todos os testes
+./gradlew test
+./gradlew :shared:allTests
+```
+
+---
+
 ## 🚀 Como rodar
 
 ### Pré-requisitos
@@ -144,9 +181,9 @@ O app usa **Material You** com cores dinâmicas no Android 12+. O esquema padrã
 4. Execute em um emulador ou dispositivo com Android 8.0+
 
 ### iOS
-1. Execute `./gradlew :shared:linkDebugFrameworkIosSimulatorArm64` para gerar o framework KMP
-2. Abra o projeto iOS no Xcode
-3. Execute no simulador ou dispositivo
+1. Abra `iosApp/iosApp.xcodeproj` no Xcode 15+
+2. Selecione um simulador iOS 17+
+3. Execute com `Cmd+R`
 
 ---
 

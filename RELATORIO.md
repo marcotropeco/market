@@ -19,8 +19,9 @@
 7. [ViewModel e Gerenciamento de Estado](#7-viewmodel-e-gerenciamento-de-estado)
 8. [Interface — Jetpack Compose](#8-interface--jetpack-compose)
 9. [Funcionalidades do App](#9-funcionalidades-do-app)
-10. [iOS — O que está pronto e o que falta](#10-ios--o-que-está-pronto-e-o-que-falta)
-11. [Stack Tecnológica e Próximos Passos](#11-stack-tecnológica-e-próximos-passos)
+10. [Testes Unitários](#10-testes-unitários)
+11. [App iOS — SwiftUI + SwiftData](#11-app-ios--swiftui--swiftdata)
+12. [Stack Tecnológica e Próximos Passos](#12-stack-tecnológica-e-próximos-passos)
 
 ---
 
@@ -51,8 +52,9 @@ O objetivo final é ter o mesmo app rodando no Android de uma pessoa e no iPhone
 | | Feature | Descrição |
 |---|---|---|
 | ✅ | App Android completo | Tela de lista com todas as funcionalidades: CRUD, filtros, busca, progresso |
-| ✅ | Domínio compartilhado | Modelos, use cases e interface de repositório prontos para iOS |
-| ✅ | Framework iOS gerado | O `shared.xcframework` pode ser importado em qualquer projeto Xcode |
+| ✅ | Domínio compartilhado | Modelos, use cases e interface de repositório compartilhados |
+| ✅ | Testes unitários | 42 testes cobrindo use cases, UiState e ViewModel |
+| ✅ | App iOS completo | SwiftUI + SwiftData com arquitetura espelhada ao Android |
 | ✅ | Arquitetura escalável | Clean Architecture com separação clara de responsabilidades |
 
 ---
@@ -520,43 +522,183 @@ O mesmo componente funciona para adicionar e editar, controlado pela prop `initi
 
 ---
 
-## 10. iOS — O que está pronto e o que falta
+## 10. Testes Unitários
 
-> `KMP · iOS`
+> `Qualidade · TDD`
 
-O app Android está 100% funcional. A parte iOS está na metade mais fácil do caminho — o núcleo (lógica) está pronto, falta a casca (UI).
+O projeto cobre as três camadas com testes unitários — sem mocking library, usando implementações fake baseadas em `MutableStateFlow`.
 
-### O que o iOS já herda hoje
+### Estratégia: Fake Repository
 
-| O que está pronto | Arquivo |
-|---|---|
-| Modelo GroceryItem com todos os campos | `shared/domain/model/GroceryItem.kt` |
-| Enum Category com labels PT-BR e emojis | `shared/domain/model/Category.kt` |
-| Interface GroceryRepository | `shared/domain/repository/` |
-| Todos os 4 use cases | `shared/domain/usecase/` |
-| Flow reativo (kotlinx-coroutines-core) | `build.gradle.kts` commonMain |
-| Framework estático gerado (3 targets) | `binaries.framework { isStatic=true }` |
+Em vez de um framework de mocking (Mockito, MockK), foi criado um `FakeGroceryRepository` que implementa a mesma interface do repositório real usando um `MutableStateFlow` em memória. Isso garante que os testes exercitem o comportamento real do fluxo reativo.
 
-### O que precisa ser construído para iOS
+```kotlin
+class FakeGroceryRepository : GroceryRepository {
+    private val _items = MutableStateFlow<List<GroceryItem>>(emptyList())
 
-1. **Criar projeto SwiftUI no Xcode** — Importar o `shared.xcframework` como dependência local.
-2. **Implementar GroceryRepository em Swift** — Criar `GroceryRepositoryImpl.swift` usando Core Data ou SwiftData. Mesma interface, implementação nativa iOS.
-3. **Adaptar Flow para Swift** — `Flow<List<GroceryItem>>` precisa ser exposto como `AsyncStream` no Swift. Bibliotecas como SKIE fazem isso automaticamente.
-4. **Criar UI em SwiftUI** — Lista, filtros, busca, bottom sheet de adição. Os use cases são chamados diretamente do ViewModel Swift.
+    override fun getAllItems(): Flow<List<GroceryItem>> = _items.asStateFlow()
 
-> 🚀 **O valor real do KMP neste projeto**
-> Quando o app iOS for construído, ele vai usar exatamente a mesma lógica que o Android. Mesmas categorias, mesmas regras de validação, mesmo comportamento de upsert, mesma query de ordenação. Zero risco de divergência de comportamento entre plataformas — porque é literalmente o mesmo código compilado para cada uma.
+    override suspend fun upsertItem(item: GroceryItem) {
+        val current = _items.value.toMutableList()
+        val index = current.indexOfFirst { it.id == item.id }
+        if (index >= 0) current[index] = item else current.add(item)
+        _items.value = current
+    }
+    // ...
+}
+```
 
-### Comando para gerar o framework iOS
+> 📚 **Por que Fake em vez de Mock?**
+> Mocks verificam *como* o código é chamado (chamou `upsertItem` com esses argumentos?). Fakes verificam *o que acontece* (o item aparece na lista depois do upsert?). Para domínios com fluxo reativo, o Fake é mais fiel ao comportamento real.
 
-```bash
-./gradlew :shared:linkDebugFrameworkIosSimulatorArm64
-# Gera: shared/build/bin/iosSimulatorArm64/debugFramework/shared.framework
+### Cobertura
+
+| Camada | Classe de teste | Testes | O que cobre |
+|---|---|---|---|
+| **Domain** | `GroceryUseCasesTest` | 13 | GetItems, UpsertItem (insert+update), DeleteItem, ClearChecked |
+| **Presentation** | `GroceryUiStateTest` | 12 | filteredItems (3 filtros), searchQuery, groupedItems, progress, counts |
+| **Presentation** | `GroceryViewModelTest` | 17 | addItem, updateItem, toggleItem, deleteItem, clearChecked, filter, search |
+
+### Testes do ViewModel: o desafio do Main Dispatcher
+
+`GroceryViewModel` usa `viewModelScope`, que internamente usa `Dispatchers.Main`. Em ambiente de testes JVM não existe Main Dispatcher — o teste travaria. A solução:
+
+```kotlin
+@OptIn(ExperimentalCoroutinesApi::class)
+class GroceryViewModelTest {
+    private val testDispatcher = UnconfinedTestDispatcher()
+
+    @BeforeTest
+    fun setUp() {
+        Dispatchers.setMain(testDispatcher)   // substitui Main pelo dispatcher de testes
+        // ...
+    }
+
+    @AfterTest
+    fun tearDown() {
+        Dispatchers.resetMain()               // restaura ao final de cada teste
+    }
+}
+```
+
+O `UnconfinedTestDispatcher` executa coroutines imediatamente e de forma síncrona — elimina a necessidade de `delay()` ou `await()` nos testes.
+
+### Ativando o StateFlow nos testes
+
+`GroceryUiState` é um `StateFlow` com `WhileSubscribed(5_000)` — só começa a emitir quando há coletores ativos. Sem um coletor, o ViewModel não processa os itens do repositório. Solução: helper `collectState`:
+
+```kotlin
+private suspend fun collectState(block: suspend () -> Unit) {
+    val job = launch(testDispatcher) { viewModel.uiState.collect { } }
+    block()
+    job.cancel()
+}
+```
+
+```kotlin
+@Test
+fun `addItem adiciona item na lista`() = runTest {
+    collectState {
+        viewModel.addItem("Leite", 1.0, "L", Category.DAIRY, "")
+        advanceUntilIdle()
+        assertEquals(1, viewModel.uiState.value.allItems.size)
+    }
+}
 ```
 
 ---
 
-## 11. Stack Tecnológica e Próximos Passos
+## 11. App iOS — SwiftUI + SwiftData
+
+> `iOS · SwiftUI`
+
+O app iOS foi construído como uma implementação nativa paralela — mesma arquitetura do Android, mesmos modelos, mesma separação em camadas — mas 100% Swift sem depender do framework KMP.
+
+> 📚 **Decisão de arquitetura: Swift puro vs. KMP integrado**
+> Integrar o `shared.xcframework` ao Xcode requer configuração manual do projeto (embed + sign framework, search paths, SKIE para expor Flow como AsyncStream). Para o objetivo deste projeto — demonstrar a arquitetura — optamos por Swift puro que espelha exatamente os modelos Kotlin, tornando a migração futura para KMP integrado trivial.
+
+### Estrutura do app iOS
+
+```
+iosApp/
+├── Domain/
+│   ├── GroceryItem.swift   # struct espelhando o data class Kotlin
+│   └── Category.swift      # enum com 13 categorias + emojis
+├── Data/
+│   └── GroceryStore.swift  # @Model SwiftData + repositório (upsert, delete, clearChecked)
+└── Presentation/
+    ├── ViewModels/
+    │   └── GroceryViewModel.swift   # @Observable, estado derivado
+    └── Views/
+        ├── GroceryListView.swift    # tela principal
+        ├── GroceryItemRow.swift     # row com swipe actions
+        ├── AddItemSheet.swift       # sheet de adição/edição
+        ├── ProgressCard.swift       # barra de progresso
+        ├── FilterRow.swift          # chips de filtro
+        └── EmptyStateView.swift     # estado vazio contextual
+```
+
+### @Observable vs. ObservableObject
+
+O iOS 17 introduziu o macro `@Observable` que substitui `ObservableObject` + `@Published`. A diferença principal: o SwiftUI re-renderiza apenas as views que leram as propriedades que mudaram — não a view inteira.
+
+```swift
+@Observable
+@MainActor
+final class GroceryViewModel {
+    private(set) var allItems: [GroceryItem] = []
+    var filter: FilterOption = .all
+    var searchQuery: String  = ""
+
+    var filteredItems: [GroceryItem] {
+        var items = allItems
+        switch filter {
+        case .pending: items = items.filter { !$0.isChecked }
+        case .checked: items = items.filter {  $0.isChecked }
+        case .all:     break
+        }
+        if !searchQuery.isEmpty {
+            items = items.filter { $0.name.localizedCaseInsensitiveContains(searchQuery) }
+        }
+        return items
+    }
+}
+```
+
+### SwiftData: persistência declarativa
+
+`SwiftData` (iOS 17+) é o equivalente iOS do Room — define o modelo com `@Model` e faz queries com `FetchDescriptor`.
+
+```swift
+@Model
+final class GroceryItemModel {
+    @Attribute(.unique) var id: String
+    var name: String
+    var isChecked: Bool
+    // ...
+
+    func toDomain() -> GroceryItem { /* mapeia para struct imutável */ }
+}
+```
+
+O padrão adotado separa o `@Model` (camada de dados) do `struct GroceryItem` (camada de domínio) — exatamente como o Room separa `GroceryItemEntity` de `GroceryItem` no Android.
+
+### Paridade de funcionalidades
+
+| Feature | Android (Compose) | iOS (SwiftUI) |
+|---|---|---|
+| Lista por categoria | `LazyColumn` + sticky headers | `List` + `Section` |
+| Marcar/desmarcar | `Checkbox` na row | swipe leading action |
+| Excluir | swipe `SwipeToDismissBox` | swipe trailing `.destructive` |
+| Adicionar/editar | `ModalBottomSheet` | `.sheet` |
+| Filtros | `FilterChip` row | `FilterChip` custom row |
+| Busca | `DockedSearchBar` | `TextField` inline |
+| Progresso | `LinearProgressIndicator` | `ProgressView` |
+| Confirmação de exclusão | `AlertDialog` | `.alert` |
+
+---
+
+## 12. Stack Tecnológica e Próximos Passos
 
 > `Tecnologia · Evolução`
 
@@ -572,15 +714,21 @@ O app Android está 100% funcional. A parte iOS está na metade mais fácil do c
 | **Koin** | 3.5.6 | Injeção de dependências sem reflexão |
 | **Coroutines + Flow** | 1.8.1 | Assincronismo e reatividade |
 | **KSP** | 2.0.0-1.0.21 | Geração de código do Room em compile-time |
+| **kotlin.test** | 2.0.0 | Testes unitários multiplataforma |
+| **kotlinx-coroutines-test** | 1.8.1 | `runTest`, `UnconfinedTestDispatcher` |
+| **Swift / SwiftUI** | iOS 17+ | UI nativa iOS |
+| **SwiftData** | iOS 17+ | Persistência nativa iOS |
+| **Swift Observation** | iOS 17+ | `@Observable` para state management |
 
 ### Próximos passos sugeridos
 
 | Prioridade | Feature | Benefício |
 |---|---|---|
-| 🔴 Alta | App iOS | Completar o objetivo original. O domínio já está pronto — é "só" a UI. |
+| ✅ Feito | App iOS | SwiftUI + SwiftData com paridade de funcionalidades |
+| ✅ Feito | Testes unitários | 42 testes cobrindo use cases, UiState e ViewModel |
 | 🔴 Alta | Sincronização em tempo real | Firebase Firestore ou Supabase — lista compartilhada entre os dois celulares. |
+| 🟡 Média | Integrar KMP no iOS | Substituir Swift puro pelo `shared.xcframework` + SKIE |
 | 🟡 Média | Notificações push | Avisar quando a lista for atualizada — "Leite foi adicionado à lista." |
-| 🟡 Média | Testes unitários | Use cases em `commonMain` são testáveis com `kotlin.test` sem Android. |
 | 🟢 Baixa | Histórico e sugestões | Guardar itens já comprados para sugerir rapidamente na próxima lista. |
 
 ### O que este projeto demonstra
@@ -592,6 +740,10 @@ O app Android está 100% funcional. A parte iOS está na metade mais fácil do c
 > **Arquitetura:** Clean Architecture completa, Repository pattern, Use Cases com responsabilidade única.
 >
 > **Android moderno:** Compose, Material 3, Room com Flow, Koin, StateFlow + combine(), collectAsStateWithLifecycle.
+>
+> **iOS moderno:** SwiftUI, SwiftData, @Observable (iOS 17), arquitetura espelhada ao Android.
+>
+> **Testes:** FakeRepository pattern, UnconfinedTestDispatcher, cobertura em 3 camadas sem mocking library.
 >
 > **UX:** animações, estados vazios, confirmações antes de ações destrutivas, feedback visual imediato.
 

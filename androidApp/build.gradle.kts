@@ -70,4 +70,8 @@ dependencies {
 
     // Coroutines
     implementation(libs.coroutines.android)
+
+    // Tests
+    testImplementation(kotlin("test"))
+    testImplementation(libs.coroutines.test)
 }
