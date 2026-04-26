@@ -1,7 +1,10 @@
 {
   "permissions": {
     "allow": [
-      "Bash(./gradlew :androidApp:compileDebugKotlin)"
+      "Bash(./gradlew :androidApp:compileDebugKotlin)",
+      "Read(//private/tmp/pdfgen/**)",
+      "Bash(npm install:*)",
+      "Bash(osascript:*)"
     ]
   }
 }
